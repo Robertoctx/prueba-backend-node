@@ -66,7 +66,7 @@ export const getMedicos = async (
             query += " AND S.CODIGO_SUCURSAL=" + req.query.codigoSucursal;
         }
         if (req.query.region) {
-            query += " AND S.REGION=" + req.query.region;
+            query += " AND S.REGION='" + req.query.region + "'";
         }
         if (req.query.tipoFiltro && req.query.valorFiltro) {
             if (req.query.tipoFiltro.toString() == "nombreMedico") {
