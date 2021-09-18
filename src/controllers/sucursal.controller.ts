@@ -31,7 +31,7 @@ export const postSucursal = async (
         const sucursal = new Sucursal();
         getRepository(Sucursal).merge(sucursal, req.body);
         let codigo = await getRepository(Sucursal).query(
-            "SELECT NVL(MAX(CODIGO_SUCURSAL)+1,1) AS COD FROM SUCURSAL"
+            "SELECT NVL(MAX(CODIGO_SUCURSAL),0)+1 AS COD FROM SUCURSAL"
         );
         sucursal.codigoSucursal = codigo[0]['COD']
         console.log(sucursal);
