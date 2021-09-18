@@ -5,5 +5,5 @@
     "password": "roberto123",
     "port": 1521,
     "sid": "orcl",
-    "logging": false
+    "entities": ["dist/entities/**/*.js"]
 }
