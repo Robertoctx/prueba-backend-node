@@ -1,0 +1,9 @@
+{
+    "type": "oracle",
+    "host": "localhost",
+    "username": "roberto",
+    "password": "roberto123",
+    "port": 1521,
+    "sid": "orcl",
+    "logging": false
+}
