@@ -23,6 +23,32 @@ export const getAllSucursales = async (
     }
 };
 
+export const postSucursal = async (
+    req: Request,
+    res: Response
+): Promise<Response> => {
+    try {
+        // validar body
+        const sucursal = new Sucursal();
+        getRepository(Sucursal).merge(sucursal, req.body);
+        const _sucursal = await getRepository(Sucursal).create(sucursal);
+        const result = await getRepository(Sucursal).save(_sucursal);
+        return res.status(200).json({
+            code: 200,
+            message: "OK",
+            data: {
+                codigoSucursal: result.codigoSucursal,
+            },
+        });
+    } catch (err) {
+        return res.status(500).json({
+            code: 500,
+            message: "Error no controlado",
+            errorData: err,
+        });
+    }
+};
+
 export const putSucursal = async (
     req: Request,
     res: Response
