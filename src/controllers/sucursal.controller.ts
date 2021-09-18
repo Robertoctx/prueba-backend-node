@@ -28,7 +28,6 @@ export const postSucursal = async (
     res: Response
 ): Promise<Response> => {
     try {
-        // validar body
         const sucursal = new Sucursal();
         getRepository(Sucursal).merge(sucursal, req.body);
         const _sucursal = await getRepository(Sucursal).create(sucursal);

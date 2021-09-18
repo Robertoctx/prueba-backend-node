@@ -28,6 +28,8 @@ export class Sucursal {
 
     @BeforeInsert()
     beforeInsertActions() {
+        this.nombreSucursal = this.nombreSucursal.toUpperCase();
+        this.region = this.region.toUpperCase();
         this.usuarioRegistro = "ROBERTO";
         this.fechaRegistro = new Date();
     }

@@ -1,8 +1,16 @@
 import { Router } from "express";
-import { getMedicos } from "../controllers/medico.controller";
+
+import { notFound } from "../controllers/medico.controller";
+import { getMedicos, postMedico } from "../controllers/medico.controller";
+import {
+    validatorGetBodyMedico,
+    validatorPostBodyMedico,
+} from "../middleware/validatorMedico";
 
 const routes = Router();
 
-routes.get("", getMedicos);
+routes.get("", validatorGetBodyMedico, getMedicos);
+routes.post("", validatorPostBodyMedico, postMedico);
+routes.all("/*", notFound);
 
 export default routes;

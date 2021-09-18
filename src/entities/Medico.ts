@@ -52,9 +52,17 @@ export class Medico {
 
     @BeforeInsert()
     beforeInsertActions() {
+        this.tipoIdentificacion = this.tipoIdentificacion.toUpperCase();
+        this.primerNombre = this.primerNombre.toUpperCase();
+        this.segundoNombre = this.segundoNombre.toUpperCase();
+        this.primerApellido = this.primerApellido.toUpperCase();
+        this.segundoApellido = this.segundoApellido.toUpperCase();
+        this.mail = this.mail.toUpperCase();
+        this.sexo = this.sexo.toUpperCase();
         this.usuarioRegistro = "ROBERTO";
         this.fechaRegistro = new Date();
-        this.nombreCompleto += this.primerNombre + " ";
+        
+        this.nombreCompleto = this.primerNombre + " ";
         if (this.segundoNombre) {
             this.nombreCompleto += this.segundoNombre + " ";
         }

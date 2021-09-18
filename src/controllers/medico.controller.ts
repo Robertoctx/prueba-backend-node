@@ -1,7 +1,18 @@
 import { Request, Response } from "express";
-import { getManager, getRepository } from "typeorm";
+import { getRepository } from "typeorm";
 
 import { Medico } from "../entities/Medico";
+
+export const notFound = async (
+    req: Request,
+    res: Response
+): Promise<Response> => {
+    return res.status(404).json({
+        code: 404,
+        message: "Servicio no encontrado",
+        errorData: {},
+    });
+};
 
 export const getAllMedicos = async (
     req: Request,
@@ -28,7 +39,8 @@ export const getMedicos = async (
     res: Response
 ): Promise<Response> => {
     try {
-        let query = `SELECT 
+        let query =
+            `SELECT 
         M.CODIGO_MEDICO AS codigoMedico,
         M.TIPO_IDENTIFICACION AS tipoIdentificacion,
         M.NUMERO_IDENTIFICACION AS numeroIdentificacion,
@@ -48,22 +60,29 @@ export const getMedicos = async (
         S.NOMBRE_SUCURSAL AS nombreSucursal,
         S.REGION AS REGION
         FROM MEDICO M 
-        JOIN SUCURSAL S ON M.CODIGO_SUCURSAL = S.CODIGO_SUCURSAL
-        WHERE M.CODIGO_EMPRESA = 1`;
-        if (req.query["codigoSucursal"]) {
-            query += " AND S.CODIGO_SUCURSAL=" + req.query["codigoSucursal"];
+        INNER JOIN SUCURSAL S ON M.CODIGO_SUCURSAL = S.CODIGO_SUCURSAL
+        WHERE M.CODIGO_EMPRESA=` + req.query.codigoEmpresa;
+        if (req.query.codigoSucursal) {
+            query += " AND S.CODIGO_SUCURSAL=" + req.query.codigoSucursal;
         }
-        if (req.query["region"])
-            query += " AND S.REGION=" + req.query["region"];
-        if (req.query["tipoFiltro"] && req.query["valorFiltro"]) {
-            query +=
-                " AND S.NOMBRE_COMPLETO LIKE '%" +
-                req.query["valorFiltro"] +
-                "%'";
+        if (req.query.region) {
+            query += " AND S.REGION=" + req.query.region;
+        }
+        if (req.query.tipoFiltro && req.query.valorFiltro) {
+            if (req.query.tipoFiltro.toString() == "nombreMedico") {
+                query +=
+                    " AND UPPER(M.NOMBRE_COMPLETO) LIKE '%" +
+                    req.query["valorFiltro"].toString().toUpperCase() +
+                    "%'";
+            } else {
+                return res.status(400).json({
+                    code: 400,
+                    message: "El tipoFiltro no es válido",
+                    errorData: {},
+                });
+            }
         }
         const lista = await getRepository(Medico).query(query);
-
-        //const lista = await getRepository(Medico).query("SELECT * FROM MEDICO");
         return res.status(200).json({
             code: 200,
             message: "OK",
