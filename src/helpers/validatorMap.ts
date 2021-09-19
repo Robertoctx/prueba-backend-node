@@ -10,7 +10,7 @@ export const validatorMap = (
     if (!errors.isEmpty()) {
         return res.status(400).json({
             code: 400,
-            message: "Faltan campos en el Request Body",
+            message: "Validación del Request",
             errorData: errors.mapped(),
         });
     }

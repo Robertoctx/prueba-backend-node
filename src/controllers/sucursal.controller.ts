@@ -30,11 +30,11 @@ export const postSucursal = async (
     try {
         const sucursal = new Sucursal();
         getRepository(Sucursal).merge(sucursal, req.body);
-        let codigo = await getRepository(Sucursal).query(
-            "SELECT NVL(MAX(CODIGO_SUCURSAL),0)+1 AS COD FROM SUCURSAL"
-        );
-        sucursal.codigoSucursal = codigo[0]['COD']
-        console.log(sucursal);
+        const _codigoSucursal = await getRepository(Sucursal)
+            .createQueryBuilder("s")
+            .select("NVL(MAX(s.codigoSucursal),0)+1", "cod")
+            .getRawOne();
+        sucursal.codigoSucursal = _codigoSucursal.cod;
         const _sucursal = await getRepository(Sucursal).create(sucursal);
         const result = await getRepository(Sucursal).save(_sucursal);
         return res.status(200).json({
@@ -58,26 +58,10 @@ export const putSucursal = async (
     res: Response
 ): Promise<Response> => {
     try {
-        const codigoSucursal = req.params.codigoSucursal;
-        const codigoEmpresa = req.query.codigoEmpresa;
-        if (!codigoSucursal) {
-            return res.status(400).json({
-                code: 400,
-                message: "El codigoSucursal es obligatorio",
-                errorData: {},
-            });
-        }
-        if (!codigoEmpresa) {
-            return res.status(400).json({
-                code: 400,
-                message: "El codigoEmpresa es obligatorio",
-                errorData: {},
-            });
-        }
         const sucursal = await getRepository(Sucursal).findOne({
             where: {
-                codigoEmpresa: codigoEmpresa,
-                codigoSucursal: codigoSucursal,
+                codigoEmpresa: req.params.codigoSucursal,
+                codigoSucursal: req.query.codigoEmpresa,
             },
         });
         if (!sucursal) {

@@ -1,16 +1,18 @@
-import { check } from "express-validator";
+import { body, param, query } from "express-validator";
 
 import { validatorMap } from "../helpers/validatorMap";
 
 export const validatorPostBodySucursal: any = [
-    check("codigoEmpresa", "El codigoEmpresa es obligatorio").not().isEmpty(),
-    check("nombreSucursal", "El nombreSucursal es obligatorio").not().isEmpty(),
-    check("region", "El region es obligatorio").not().isEmpty(),
+    body("codigoEmpresa", "El codigoEmpresa es obligatorio").not().isEmpty(),
+    body("nombreSucursal", "El nombreSucursal es obligatorio").not().isEmpty(),
+    body("region", "El region es obligatorio").not().isEmpty(),
     validatorMap,
 ];
 
 export const validatorPutBodySucursal: any = [
-    check("nombreSucursal", "El nombreSucursal es obligatorio").not().isEmpty(),
-    check("region", "El region es obligatorio").not().isEmpty(),
+    param("codigoSucursal", "El codigoSucursal es obligatorio").not().isEmpty(),
+    query("codigoEmpresa", "El codigoEmpresa es obligatorio").not().isEmpty(),
+    body("nombreSucursal", "El nombreSucursal es obligatorio").not().isEmpty(),
+    //body("region", "El region es obligatorio").not().isEmpty(),
     validatorMap,
 ];

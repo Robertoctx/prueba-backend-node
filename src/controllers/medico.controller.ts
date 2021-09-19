@@ -3,17 +3,6 @@ import { getRepository } from "typeorm";
 
 import { Medico } from "../entities/Medico";
 
-export const notFound = async (
-    req: Request,
-    res: Response
-): Promise<Response> => {
-    return res.status(404).json({
-        code: 404,
-        message: "Servicio no encontrado",
-        errorData: {},
-    });
-};
-
 export const getAllMedicos = async (
     req: Request,
     res: Response
@@ -39,41 +28,30 @@ export const getMedicos = async (
     res: Response
 ): Promise<Response> => {
     try {
-        let query =
-            `SELECT 
-        M.CODIGO_MEDICO AS codigoMedico,
-        M.TIPO_IDENTIFICACION AS tipoIdentificacion,
-        M.NUMERO_IDENTIFICACION AS numeroIdentificacion,
-        M.PRIMER_NOMBRE AS primerNombre,
-        M.SEGUNDO_NOMBRE AS segundoNombre,
-        M.PRIMER_APELLIDO AS primerApellido,
-        M.SEGUNDO_APELLIDO AS segundoApellido,
-        M.NOMBRE_COMPLETO AS nombreCompleto,
-        M.MAIL AS mail,
-        M.FECHA_NACIMIENTO AS fechaNacimiento,
-        M.SUELDO AS sueldo,
-        M.SEXO AS sexo,
-        M.CODIGO_SUCURSAL AS codigoSucursal,
-        M.CODIGO_EMPRESA AS codigoEmpresa,
-        M.USUARIO_REGISTRO AS usuarioRegistro,
-        M.FECHA_REGISTRO AS fechaRegistro,
-        S.NOMBRE_SUCURSAL AS nombreSucursal,
-        S.REGION AS REGION
-        FROM MEDICO M 
-        INNER JOIN SUCURSAL S ON M.CODIGO_SUCURSAL = S.CODIGO_SUCURSAL
-        WHERE M.CODIGO_EMPRESA=` + req.query.codigoEmpresa;
+        const query = getRepository(Medico)
+            .createQueryBuilder("medico")
+            .innerJoinAndSelect("medico.sucursal", "sucursal")
+            .where("medico.codigoEmpresa = :codigoEmpresa", {
+                codigoEmpresa: req.query.codigoEmpresa,
+            });
         if (req.query.codigoSucursal) {
-            query += " AND S.CODIGO_SUCURSAL=" + req.query.codigoSucursal;
+            query.andWhere("medico.codigoSucursal = :codigoSucursal", {
+                codigoSucursal: req.query.codigoSucursal,
+            });
         }
         if (req.query.region) {
-            query += " AND S.REGION='" + req.query.region + "'";
+            query.andWhere("UPPER(sucursal.region) = UPPER(:region)", {
+                region: req.query.region,
+            });
         }
         if (req.query.tipoFiltro && req.query.valorFiltro) {
-            if (req.query.tipoFiltro.toString() == "nombreMedico") {
-                query +=
-                    " AND UPPER(M.NOMBRE_COMPLETO) LIKE '%" +
-                    req.query["valorFiltro"].toString().toUpperCase() +
-                    "%'";
+            if (req.query.tipoFiltro == "nombreMedico") {
+                query.andWhere(
+                    "UPPER(medico.nombreCompleto) LIKE UPPER(:nombreCompleto)",
+                    {
+                        nombreCompleto: `%${req.query.valorFiltro}%`,
+                    }
+                );
             } else {
                 return res.status(400).json({
                     code: 400,
@@ -82,7 +60,7 @@ export const getMedicos = async (
                 });
             }
         }
-        const lista = await getRepository(Medico).query(query);
+        const lista = await query.getMany();
         return res.status(200).json({
             code: 200,
             message: "OK",

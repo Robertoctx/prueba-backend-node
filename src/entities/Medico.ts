@@ -1,4 +1,12 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+    BeforeInsert,
+    Column,
+    Entity,
+    JoinColumn,
+    OneToOne,
+    PrimaryGeneratedColumn,
+} from "typeorm";
+import { Sucursal } from "./Sucursal";
 
 @Entity("MEDICO")
 export class Medico {
@@ -49,6 +57,18 @@ export class Medico {
 
     @Column({ name: "FECHA_REGISTRO" })
     fechaRegistro: Date;
+
+    @OneToOne(
+        (type) => Sucursal,
+        (sucursal) => {
+            sucursal.codigoSucursal, sucursal.region;
+        },
+        {
+            eager: true,
+        }
+    )
+    @JoinColumn({ name: "CODIGO_SUCURSAL" })
+    sucursal: Sucursal;
 
     @BeforeInsert()
     beforeInsertActions() {

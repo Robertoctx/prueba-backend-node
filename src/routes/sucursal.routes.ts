@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { notFound } from "../controllers/medico.controller";
+import { notFound } from "../controllers/error.controller";
 import {
     validatorPostBodySucursal,
     validatorPutBodySucursal,
